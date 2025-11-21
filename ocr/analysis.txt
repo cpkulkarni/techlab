@@ -1,0 +1,11 @@
+Analysis
+
+for sanskrit texts 
+easy ocr - does not recgoize all the words correctly. 2nd less time
+surya ocr - does not recgoize all the words correctly. takes much time to run
+snipping tool ocr (using powertoys) - recognises much better but still not many words correctly. very less time 
+
+for marathi texts
+easy ocr - does recgoize most words correctly. 2nd less time
+surya ocr - does not recgoize all the words correctly. takes much time to run
+snipping tool ocr (using powertoys) - recognises almost all words correctly. very less time 
