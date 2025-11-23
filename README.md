@@ -1,4 +1,5 @@
-# Project Name
+# Chaitanya's TechLab  
+## Sustainable innovations 
 
 Copyright (c) [2024, 2025] Chaitanya Kulkarni. All rights reserved.
 
