@@ -322,8 +322,19 @@ function loadGraph(jsonString) {
   try {
     const data = JSON.parse(jsonString);
     if (!Array.isArray(data.nodes) || !Array.isArray(data.edges)) throw new Error('Invalid graph file');
-    state.nodes = data.nodes;
-    state.edges = data.edges;
+    // Fix #5: sanitise every node and edge from the loaded file
+    state.nodes = data.nodes.map(sanitiseNode).filter(Boolean);
+    state.edges = data.edges.map(e => {
+      // edges in saved files already have id; re-derive after sanitising
+      const clean = sanitiseEdge(e);
+      if (!clean) return null;
+      return {
+        id:       `${clean.source}->${clean.target}`,
+        source:   clean.source,
+        target:   clean.target,
+        relation: clean.relation
+      };
+    }).filter(Boolean);
     updateGraph();
     setTimeout(fitToView, 600);
     showToast('Graph loaded!', 'success');
@@ -407,12 +418,25 @@ window.addEventListener('resize', () => {
     try {
       const data = JSON.parse(saved);
       if (data.nodes && data.nodes.length > 1) {
+        // Fix #7: build banner with DOM APIs — no innerHTML with data values
         const banner = document.createElement('div');
         banner.style.cssText = 'position:fixed;top:70px;right:16px;z-index:600;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:12px;color:var(--text);box-shadow:0 4px 16px rgba(0,0,0,.4);display:flex;gap:10px;align-items:center';
-        banner.innerHTML = `<span>Resume last session? (${data.nodes.length} nodes)</span><button id="resume-yes" style="background:var(--accent);color:#fff;border:none;border-radius:5px;padding:4px 10px;cursor:pointer;font-size:12px">Resume</button><button id="resume-no" style="background:transparent;color:var(--muted);border:none;cursor:pointer;font-size:12px">Dismiss</button>`;
+
+        const label = document.createElement('span');
+        label.textContent = `Resume last session? (${data.nodes.length} nodes)`;
+
+        const btnYes = document.createElement('button');
+        btnYes.textContent = 'Resume';
+        btnYes.style.cssText = 'background:var(--accent);color:#fff;border:none;border-radius:5px;padding:4px 10px;cursor:pointer;font-size:12px';
+        btnYes.onclick = () => { loadGraph(saved); banner.remove(); };
+
+        const btnNo = document.createElement('button');
+        btnNo.textContent = 'Dismiss';
+        btnNo.style.cssText = 'background:transparent;color:var(--muted);border:none;cursor:pointer;font-size:12px';
+        btnNo.onclick = () => banner.remove();
+
+        banner.append(label, btnYes, btnNo);
         document.body.appendChild(banner);
-        document.getElementById('resume-yes').onclick = () => { loadGraph(saved); banner.remove(); };
-        document.getElementById('resume-no').onclick  = () => banner.remove();
       }
     } catch(e) {}
   }

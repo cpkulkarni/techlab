@@ -11,6 +11,7 @@ import { execSync } from 'child_process';
 import { Type } from '@google/genai';
 import { generateText } from '../shared/llm.js';
 import { getWorkspaceDir, setWorkspaceDir, buildTree, collectDirFiles, isSourceCodePath } from '../shared/workspace.js';
+import { assertWorkspaceBoundary } from '../shared/workspaceGuard.js';
 import { getGeminiClient } from '../shared/llm.js';
 import { generateKnowledgeGraph } from '../shared/knowledgeGraph.js';
 
@@ -106,8 +107,8 @@ router.get('/file', async (req, res) => {
   if (!relativePath) return res.status(400).json({ success: false, error: 'Path query parameter is required.' });
   const WORKSPACE_DIR = getWorkspaceDir();
   try {
-    const fullPath = path.join(WORKSPACE_DIR, relativePath);
-    if (!fullPath.startsWith(WORKSPACE_DIR)) return res.status(403).json({ success: false, error: 'Access denied: outside workspace bounds.' });
+    const targetPath = path.resolve(WORKSPACE_DIR, relativePath);
+    const fullPath = assertWorkspaceBoundary(targetPath, WORKSPACE_DIR);
     const content = await fs.readFile(fullPath, 'utf8');
     res.json({ success: true, content });
   } catch (error: any) {
@@ -122,8 +123,8 @@ router.post('/file', async (req, res) => {
   if (isSourceCodePath(relativePath)) return res.status(403).json({ success: false, error: 'This file is part of the locked source-code group and cannot be modified.' });
   const WORKSPACE_DIR = getWorkspaceDir();
   try {
-    const fullPath = path.join(WORKSPACE_DIR, relativePath);
-    if (!fullPath.startsWith(WORKSPACE_DIR)) return res.status(403).json({ success: false, error: 'Access denied: outside workspace bounds.' });
+    const targetPath = path.resolve(WORKSPACE_DIR, relativePath);
+    const fullPath = assertWorkspaceBoundary(targetPath, WORKSPACE_DIR);
     await fs.mkdir(path.dirname(fullPath), { recursive: true });
     await fs.writeFile(fullPath, content ?? '', 'utf8');
     generateKnowledgeGraph().catch(err => console.error('Auto KG update error:', err));

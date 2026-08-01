@@ -17,6 +17,7 @@ import nodemailer from 'nodemailer';
 import dns from 'dns';
 import { generateText } from '../shared/llm.js';
 import { getWorkspaceDir, collectDirFiles } from '../shared/workspace.js';
+import { assertWorkspaceBoundary } from '../shared/workspaceGuard.js';
 
 export interface NodeExecutionContext {
   node: any;
@@ -69,9 +70,12 @@ export async function executeNode(ctx: NodeExecutionContext): Promise<string> {
       const resolvedArgs = (cfg.args || '')
         .replace(/\{\{input\}\}/g, inputValue)
         .replace(/\{\{context\}\}/g, upstreamContext);
-      const targetPath = path.join(WORKSPACE_DIR, cfg.fileName || '');
       let fileContent = '';
-      try { fileContent = await fs.readFile(targetPath, 'utf8'); } catch {}
+      try {
+        const rawPath = path.resolve(WORKSPACE_DIR, cfg.fileName || '');
+        const targetPath = assertWorkspaceBoundary(rawPath, WORKSPACE_DIR);
+        fileContent = await fs.readFile(targetPath, 'utf8');
+      } catch {}
       output = `[Code Execution]\nFile: ${cfg.fileName}\nLanguage: ${cfg.language}\nArgs: ${resolvedArgs || '(none)'}\nUpstream input available: ${inputValue.length} chars\n\n--- File Preview (first 400 chars) ---\n${fileContent.slice(0, 400) || '(file not found)'}`;
       log(`  ✅ Code execution staged: ${cfg.fileName}`);
       break;
@@ -79,9 +83,11 @@ export async function executeNode(ctx: NodeExecutionContext): Promise<string> {
 
     case 'test_runner': {
       const cfg = node.config;
-      const testDir = path.join(WORKSPACE_DIR, cfg.directory || 'tests');
       let testFiles: string[] = [];
+      let testDir = '';
       try {
+        const rawPath = path.resolve(WORKSPACE_DIR, cfg.directory || 'tests');
+        testDir = assertWorkspaceBoundary(rawPath, WORKSPACE_DIR);
         const entries = await fs.readdir(testDir);
         testFiles = entries.filter(f => /test/i.test(f));
       } catch {}

@@ -15,11 +15,13 @@ function loadSettings() {
 function saveSettings() {
   const p = document.getElementById('set-provider').value;
   state.settings.provider     = p;
-  state.settings.ollamaUrl    = document.getElementById('set-ollama-url').value.trim() || 'http://localhost:11434';
+  state.settings.ollamaUrl    = safeOllamaUrl(document.getElementById('set-ollama-url').value.trim());
   state.settings.model        = getModelFromForm() || defaultModel(p);
   state.settings.apiKey       = document.getElementById('set-apikey').value.trim();
   state.settings.searchEngine = document.getElementById('set-search-engine').value;
-  localStorage.setItem(LS_SETTINGS, JSON.stringify(state.settings));
+  // Fix #1: never persist the API key to localStorage
+  const { apiKey: _drop, ...toSave } = state.settings;
+  localStorage.setItem(LS_SETTINGS, JSON.stringify(toSave));
   closeSettings();
   showToast('Settings saved', 'success');
 }
@@ -45,7 +47,8 @@ function applySettingsToForm() {
     const opt = Array.from(sel.options).find(o => o.value === state.settings.model);
     if (opt) sel.value = state.settings.model;
   }
-  document.getElementById('set-apikey').value        = state.settings.apiKey;
+  // Fix #1: apiKey is never stored, so the field always starts empty — user re-enters each session
+  document.getElementById('set-apikey').value        = '';
   document.getElementById('set-search-engine').value = state.settings.searchEngine;
   toggleProviderFields(p);
   if (p === 'ollama' && state.settings.ollamaUrl) {
@@ -61,11 +64,23 @@ function toggleProviderFields(p) {
   document.getElementById('set-group-model').style.display         = p === 'openai' ? '' : 'none';
 }
 
+// Fix #3: only allow http/https schemes for the Ollama base URL
+function safeOllamaUrl(raw) {
+  try {
+    const u = new URL(raw || 'http://localhost:11434');
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') throw new Error();
+    return u.origin;
+  } catch {
+    return 'http://localhost:11434';
+  }
+}
+
 async function loadOllamaModels(baseUrl, selectValue) {
   const status = document.getElementById('ollama-connect-status');
   const sel    = document.getElementById('set-ollama-model');
   const grp    = document.getElementById('set-group-ollama-model');
-  const url    = (baseUrl || 'http://localhost:11434').replace(/\/$/, '');
+  // Fix #3: validate URL before fetching
+  const url    = safeOllamaUrl(baseUrl);
   status.style.color = 'var(--muted)';
   status.textContent = '⏳ Connecting…';
   try {
@@ -74,16 +89,24 @@ async function loadOllamaModels(baseUrl, selectValue) {
     const data = await res.json();
     const models = (data.models || []).map(m => m.name).sort();
     if (models.length === 0) throw new Error('No models found — pull a model first (e.g. ollama pull llama3)');
-    sel.innerHTML = models.map(m =>
-      `<option value="${m}"${m === selectValue ? ' selected' : ''}>${m}</option>`
-    ).join('');
+    // Fix #2: use DOM APIs instead of innerHTML to avoid XSS via model names
+    sel.replaceChildren(...models.map(m => {
+      const opt = document.createElement('option');
+      opt.value       = m;
+      opt.textContent = m;
+      opt.selected    = m === selectValue;
+      return opt;
+    }));
     grp.style.display = '';
     status.style.color = 'var(--success)';
     status.textContent = `✓ Connected — ${models.length} model${models.length > 1 ? 's' : ''} available`;
   } catch(e) {
     grp.style.display = 'none';
     status.style.color = 'var(--danger)';
-    status.textContent = `✗ ${e.message}`;
+    const isNetwork = e instanceof TypeError && /fetch|network/i.test(e.message);
+    status.textContent = isNetwork
+      ? '✗ Cannot reach Ollama. Enable CORS by restarting Ollama with: OLLAMA_ORIGINS=* ollama serve'
+      : `✗ ${e.message}`;
   }
 }
 
@@ -107,6 +130,7 @@ document.getElementById('set-provider').addEventListener('change', e => {
 });
 
 document.getElementById('ollama-connect-btn').addEventListener('click', () => {
+  // safeOllamaUrl is applied inside loadOllamaModels
   const url = document.getElementById('set-ollama-url').value.trim() || 'http://localhost:11434';
   loadOllamaModels(url, document.getElementById('set-ollama-model').value);
 });

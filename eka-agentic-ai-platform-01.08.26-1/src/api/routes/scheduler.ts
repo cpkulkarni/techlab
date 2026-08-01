@@ -10,6 +10,7 @@ import { existsSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { getWorkspaceDir } from '../shared/workspace.js';
+import { assertWorkspaceBoundary } from '../shared/workspaceGuard.js';
 
 const execAsync = promisify(exec);
 const router = Router();
@@ -164,9 +165,9 @@ export async function executeScheduledJobAction(job: ScheduledJob): Promise<stri
 
   try {
     if (classification.category === 'executable_file' || classification.category === 'document_file') {
-      const filePath = path.isAbsolute(job.payload.trim())
-        ? job.payload.trim()
-        : path.join(workspaceDir, job.payload.trim());
+      const rawPath = job.payload.trim();
+      const targetPath = path.isAbsolute(rawPath) ? rawPath : path.resolve(workspaceDir, rawPath);
+      const filePath = assertWorkspaceBoundary(targetPath, workspaceDir);
 
       const ext = path.extname(filePath).toLowerCase().replace('.', '');
       const isExec = ['exe', 'py', 'sh', 'bat', 'cmd', 'js', 'ts', 'ps1'].includes(ext);

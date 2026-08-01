@@ -2,10 +2,10 @@
   "metadata": {
     "title": "Eka Source Code Knowledge Graph",
     "description": "Comprehensive AST Knowledge Graph containing file names, object definitions, parameters, line numbers, imports, exports, and relationships for entire Eka application.",
-    "generatedAt": "2026-08-01T08:50:32.460Z",
+    "generatedAt": "2026-08-01T11:38:38.781Z",
     "totalFiles": 86,
     "totalDefinitions": 249,
-    "totalLinesOfCode": 19233,
+    "totalLinesOfCode": 19241,
     "sourceRoot": "src"
   },
   "summary": {
@@ -1204,8 +1204,8 @@
       "fileName": "scheduler.ts",
       "extension": ".ts",
       "language": "typescript",
-      "sizeBytes": 14258,
-      "lineCount": 387,
+      "sizeBytes": 14401,
+      "lineCount": 388,
       "imports": [
         {
           "module": "express",
@@ -1262,42 +1262,50 @@
           ],
           "isRelative": true,
           "line": 12
+        },
+        {
+          "module": "../shared/workspaceGuard.js",
+          "importedSymbols": [
+            "assertWorkspaceBoundary"
+          ],
+          "isRelative": true,
+          "line": 13
         }
       ],
       "exports": [
         {
           "name": "ScheduledJob",
           "kind": "interface",
-          "line": 17
+          "line": 18
         },
         {
           "name": "classifyPayload",
           "kind": "function",
           "isDefault": false,
-          "line": 88
+          "line": 89
         },
         {
           "name": "computeNextRunAt",
           "kind": "function",
           "isDefault": false,
-          "line": 140
+          "line": 141
         },
         {
           "name": "executeScheduledJobAction",
           "kind": "function",
           "isDefault": false,
-          "line": 156
+          "line": 157
         },
         {
           "name": "startBackgroundSchedulerLoop",
           "kind": "function",
           "isDefault": false,
-          "line": 259
+          "line": 260
         },
         {
           "name": "router",
           "isDefault": true,
-          "line": 386
+          "line": 387
         }
       ],
       "objectDefinitions": [
@@ -1305,169 +1313,169 @@
           "name": "execAsync",
           "kind": "const",
           "isExported": false,
-          "startLine": 14,
-          "endLine": 14
+          "startLine": 15,
+          "endLine": 15
         },
         {
           "name": "router",
           "kind": "const",
           "isExported": false,
-          "startLine": 15,
-          "endLine": 15
+          "startLine": 16,
+          "endLine": 16
         },
         {
           "name": "ScheduledJob",
           "kind": "interface",
           "isExported": true,
-          "startLine": 17,
-          "endLine": 47,
+          "startLine": 18,
+          "endLine": 48,
           "members": [
             {
               "name": "id",
               "type": "string",
               "optional": false,
               "kind": "property",
-              "line": 18
+              "line": 19
             },
             {
               "name": "name",
               "type": "string",
               "optional": false,
               "kind": "property",
-              "line": 19
+              "line": 20
             },
             {
               "name": "source",
               "type": "'workflow_component' | 'multi_agent' | 'user_direct'",
               "optional": false,
               "kind": "property",
-              "line": 20
+              "line": 21
             },
             {
               "name": "schedulerServer",
               "type": "'temporal' | 'trigger_dev' | 'embedded'",
               "optional": false,
               "kind": "property",
-              "line": 21
+              "line": 22
             },
             {
               "name": "scheduleType",
               "type": "'cron' | 'interval' | 'one_shot'",
               "optional": false,
               "kind": "property",
-              "line": 22
+              "line": 23
             },
             {
               "name": "cronExpression",
               "type": "string",
               "optional": true,
               "kind": "property",
-              "line": 23
+              "line": 24
             },
             {
               "name": "intervalSeconds",
               "type": "number",
               "optional": true,
               "kind": "property",
-              "line": 24
+              "line": 25
             },
             {
               "name": "oneShotTime",
               "type": "string",
               "optional": true,
               "kind": "property",
-              "line": 25
+              "line": 26
             },
             {
               "name": "actionType",
               "type": "'auto_detect' | 'execute_code' | 'file_action' | 'pipeline_workflow' | 'agent_task'",
               "optional": false,
               "kind": "property",
-              "line": 26
+              "line": 27
             },
             {
               "name": "payload",
               "type": "string",
               "optional": false,
               "kind": "property",
-              "line": 27
+              "line": 28
             },
             {
               "name": "detectedCategory",
               "type": "'code' | 'executable_file' | 'document_file' | 'workflow' | 'agent_task'",
               "optional": true,
               "kind": "property",
-              "line": 28
+              "line": 29
             },
             {
               "name": "targetLanguageOrExt",
               "type": "string",
               "optional": true,
               "kind": "property",
-              "line": 29
+              "line": 30
             },
             {
               "name": "status",
               "type": "'scheduled' | 'running' | 'completed' | 'failed' | 'paused' | 'cancelled'",
               "optional": false,
               "kind": "property",
-              "line": 30
+              "line": 31
             },
             {
               "name": "createdAt",
               "type": "string",
               "optional": false,
               "kind": "property",
-              "line": 31
+              "line": 32
             },
             {
               "name": "lastRunAt",
               "type": "string",
               "optional": true,
               "kind": "property",
-              "line": 32
+              "line": 33
             },
             {
               "name": "nextRunAt",
               "type": "string",
               "optional": true,
               "kind": "property",
-              "line": 33
+              "line": 34
             },
             {
               "name": "runCount",
               "type": "number",
               "optional": false,
               "kind": "property",
-              "line": 34
+              "line": 35
             },
             {
               "name": "lastRunResult",
               "type": "string",
               "optional": true,
               "kind": "property",
-              "line": 35
+              "line": 36
             },
             {
               "name": "logs",
               "type": "string[]",
               "optional": false,
               "kind": "property",
-              "line": 36
+              "line": 37
             },
             {
               "name": "temporalConfig",
               "type": "{\n    namespace?: string;\n    taskQueue?: string;\n    workflowId?: string;\n  }",
               "optional": true,
               "kind": "property",
-              "line": 37
+              "line": 38
             },
             {
               "name": "triggerDevConfig",
               "type": "{\n    environment?: string;\n    endpoint?: string;\n    jobSlug?: string;\n  }",
               "optional": true,
               "kind": "property",
-              "line": 42
+              "line": 43
             }
           ]
         },
@@ -1475,15 +1483,15 @@
           "name": "jobsMap",
           "kind": "const",
           "isExported": false,
-          "startLine": 50,
-          "endLine": 50
+          "startLine": 51,
+          "endLine": 51
         },
         {
           "name": "SCHEDULER_STORE_PATH",
           "kind": "component",
           "isExported": false,
-          "startLine": 52,
-          "endLine": 52,
+          "startLine": 53,
+          "endLine": 53,
           "parameters": [],
           "returnType": "JSX.Element",
           "hooksUsed": [],
@@ -1495,8 +1503,8 @@
           "kind": "function",
           "isExported": false,
           "isDefaultExport": false,
-          "startLine": 54,
-          "endLine": 71,
+          "startLine": 55,
+          "endLine": 72,
           "parameters": [],
           "returnType": "void",
           "hooksUsed": [],
@@ -1508,8 +1516,8 @@
           "kind": "function",
           "isExported": false,
           "isDefaultExport": false,
-          "startLine": 73,
-          "endLine": 80,
+          "startLine": 74,
+          "endLine": 81,
           "parameters": [],
           "returnType": "void",
           "hooksUsed": [],
@@ -1521,8 +1529,8 @@
           "kind": "function",
           "isExported": true,
           "isDefaultExport": false,
-          "startLine": 88,
-          "endLine": 135,
+          "startLine": 89,
+          "endLine": 136,
           "parameters": [
             {
               "name": "payload",
@@ -1546,8 +1554,8 @@
           "kind": "function",
           "isExported": true,
           "isDefaultExport": false,
-          "startLine": 140,
-          "endLine": 151,
+          "startLine": 141,
+          "endLine": 152,
           "parameters": [
             {
               "name": "job",
@@ -1566,8 +1574,8 @@
           "kind": "function",
           "isExported": true,
           "isDefaultExport": false,
-          "startLine": 156,
-          "endLine": 254,
+          "startLine": 157,
+          "endLine": 255,
           "parameters": [
             {
               "name": "job",
@@ -1585,8 +1593,8 @@
           "name": "schedulerIntervalTimer",
           "kind": "const",
           "isExported": false,
-          "startLine": 257,
-          "endLine": 257,
+          "startLine": 258,
+          "endLine": 258,
           "returnType": "any"
         },
         {
@@ -1594,8 +1602,8 @@
           "kind": "function",
           "isExported": true,
           "isDefaultExport": false,
-          "startLine": 259,
-          "endLine": 277,
+          "startLine": 260,
+          "endLine": 278,
           "parameters": [],
           "returnType": "void",
           "hooksUsed": [],
@@ -2064,8 +2072,8 @@
       "fileName": "workflowNodes.ts",
       "extension": ".ts",
       "language": "typescript",
-      "sizeBytes": 27273,
-      "lineCount": 547,
+      "sizeBytes": 27532,
+      "lineCount": 553,
       "imports": [
         {
           "module": "path",
@@ -2115,19 +2123,27 @@
           ],
           "isRelative": true,
           "line": 19
+        },
+        {
+          "module": "../shared/workspaceGuard.js",
+          "importedSymbols": [
+            "assertWorkspaceBoundary"
+          ],
+          "isRelative": true,
+          "line": 20
         }
       ],
       "exports": [
         {
           "name": "NodeExecutionContext",
           "kind": "interface",
-          "line": 21
+          "line": 22
         },
         {
           "name": "executeNode",
           "kind": "function",
           "isDefault": false,
-          "line": 36
+          "line": 37
         }
       ],
       "objectDefinitions": [
@@ -2135,64 +2151,64 @@
           "name": "NodeExecutionContext",
           "kind": "interface",
           "isExported": true,
-          "startLine": 21,
-          "endLine": 30,
+          "startLine": 22,
+          "endLine": 31,
           "members": [
             {
               "name": "node",
               "type": "any",
               "optional": false,
               "kind": "property",
-              "line": 22
+              "line": 23
             },
             {
               "name": "nodes",
               "type": "any[]",
               "optional": false,
               "kind": "property",
-              "line": 23
+              "line": 24
             },
             {
               "name": "edges",
               "type": "any[]",
               "optional": false,
               "kind": "property",
-              "line": 24
+              "line": 25
             },
             {
               "name": "nodeMap",
               "type": "Record<string, any>",
               "optional": false,
               "kind": "property",
-              "line": 25
+              "line": 26
             },
             {
               "name": "contextByNode",
               "type": "Record<string, string>",
               "optional": false,
               "kind": "property",
-              "line": 26
+              "line": 27
             },
             {
               "name": "customConfig",
               "type": "any",
               "optional": false,
               "kind": "property",
-              "line": 27
+              "line": 28
             },
             {
               "name": "workflowName",
               "type": "string",
               "optional": false,
               "kind": "property",
-              "line": 28
+              "line": 29
             },
             {
               "name": "log",
               "type": "(line: string) => void",
               "optional": false,
               "kind": "property",
-              "line": 29
+              "line": 30
             }
           ]
         },
@@ -2201,8 +2217,8 @@
           "kind": "function",
           "isExported": true,
           "isDefaultExport": false,
-          "startLine": 36,
-          "endLine": 546,
+          "startLine": 37,
+          "endLine": 552,
           "parameters": [
             {
               "name": "ctx",
@@ -2223,8 +2239,8 @@
       "fileName": "workspace.ts",
       "extension": ".ts",
       "language": "typescript",
-      "sizeBytes": 14072,
-      "lineCount": 332,
+      "sizeBytes": 14009,
+      "lineCount": 333,
       "imports": [
         {
           "module": "express",
@@ -2295,12 +2311,20 @@
           "line": 13
         },
         {
+          "module": "../shared/workspaceGuard.js",
+          "importedSymbols": [
+            "assertWorkspaceBoundary"
+          ],
+          "isRelative": true,
+          "line": 14
+        },
+        {
           "module": "../shared/llm.js",
           "importedSymbols": [
             "getGeminiClient"
           ],
           "isRelative": true,
-          "line": 14
+          "line": 15
         },
         {
           "module": "../shared/knowledgeGraph.js",
@@ -2308,14 +2332,14 @@
             "generateKnowledgeGraph"
           ],
           "isRelative": true,
-          "line": 15
+          "line": 16
         }
       ],
       "exports": [
         {
           "name": "router",
           "isDefault": true,
-          "line": 331
+          "line": 332
         }
       ],
       "objectDefinitions": [
@@ -2323,8 +2347,8 @@
           "name": "router",
           "kind": "const",
           "isExported": false,
-          "startLine": 17,
-          "endLine": 17
+          "startLine": 18,
+          "endLine": 18
         }
       ]
     },

@@ -3,8 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Fix #8: Content Security Policy — restricts script sources, outbound connections, and object embedding -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
+             connect-src 'self' http://localhost:11434 https://localhost:11434 https://api.openai.com https://generativelanguage.googleapis.com https://api.duckduckgo.com;
+             style-src 'self' 'unsafe-inline';
+             img-src 'self' data:;
+             object-src 'none';
+             base-uri 'none';" />
   <title>Knowledge Graph Explorer</title>
-  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <!-- Fix #9: pin D3 to an exact version with a Subresource Integrity hash -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"
+          integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i"
+          crossorigin="anonymous"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
