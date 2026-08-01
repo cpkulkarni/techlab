@@ -1,0 +1,6 @@
+{
+  "name": "Eka - Agentic AI Studio",
+  "description": "An advanced AI-powered development agent featuring a virtual workspace file manager, customizable model servers, multi-mode agents (chat, code, research, test), and real-time workflow graphing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

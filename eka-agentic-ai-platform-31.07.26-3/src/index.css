@@ -1,0 +1,438 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+[data-theme="white"] {
+  color-scheme: light;
+}
+
+[data-theme="light-grey"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* =========================================================
+   ACCENT COLOR THEMED REPLACEMENT VARIABLES
+   ========================================================= */
+
+[data-accent="indigo"] {
+  --accent-primary: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-light: rgba(99, 102, 241, 0.15);
+  --accent-border: rgba(99, 102, 241, 0.4);
+  --accent-text: #818cf8;
+}
+
+[data-accent="emerald"] {
+  --accent-primary: #10b981;
+  --accent-hover: #059669;
+  --accent-light: rgba(16, 185, 129, 0.15);
+  --accent-border: rgba(16, 185, 129, 0.4);
+  --accent-text: #34d399;
+}
+
+[data-accent="violet"] {
+  --accent-primary: #8b5cf6;
+  --accent-hover: #7c3aed;
+  --accent-light: rgba(139, 92, 246, 0.15);
+  --accent-border: rgba(139, 92, 246, 0.4);
+  --accent-text: #a78bfa;
+}
+
+[data-accent="rose"] {
+  --accent-primary: #f43f5e;
+  --accent-hover: #e11d48;
+  --accent-light: rgba(244, 63, 94, 0.15);
+  --accent-border: rgba(244, 63, 94, 0.4);
+  --accent-text: #fb7185;
+}
+
+[data-accent="amber"] {
+  --accent-primary: #f59e0b;
+  --accent-hover: #d97706;
+  --accent-light: rgba(245, 158, 11, 0.15);
+  --accent-border: rgba(245, 158, 11, 0.4);
+  --accent-text: #fbbf24;
+}
+
+[data-accent="cyan"] {
+  --accent-primary: #06b6d4;
+  --accent-hover: #0891b2;
+  --accent-light: rgba(6, 182, 212, 0.15);
+  --accent-border: rgba(6, 182, 212, 0.4);
+  --accent-text: #22d3ee;
+}
+
+[data-accent="blue"] {
+  --accent-primary: #3b82f6;
+  --accent-hover: #2563eb;
+  --accent-light: rgba(59, 130, 246, 0.15);
+  --accent-border: rgba(59, 130, 246, 0.4);
+  --accent-text: #60a5fa;
+}
+
+.theme-accent-bg {
+  background-color: var(--accent-primary) !important;
+}
+
+.theme-accent-text {
+  color: var(--accent-text) !important;
+}
+
+.theme-accent-border {
+  border-color: var(--accent-border) !important;
+}
+
+.theme-accent-badge {
+  background-color: var(--accent-light) !important;
+  color: var(--accent-text) !important;
+  border: 1px solid var(--accent-border) !important;
+}
+
+/* =========================================================
+   MARKDOWN FORMATTED PREVIEW & PROSE STYLES
+   ========================================================= */
+.prose h1, .markdown-body h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--accent-border, #334155);
+  color: var(--accent-text, #818cf8);
+}
+
+.prose h2, .markdown-body h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 0.875rem;
+  margin-bottom: 0.5rem;
+  color: inherit;
+}
+
+.prose h3, .markdown-body h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+  margin-bottom: 0.375rem;
+  color: inherit;
+}
+
+.prose p, .markdown-body p {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.prose ul, .markdown-body ul {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose ol, .markdown-body ol {
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose li, .markdown-body li {
+  margin-bottom: 0.25rem;
+}
+
+.prose code, .markdown-body code {
+  font-family: var(--font-mono, monospace);
+  background-color: rgba(120, 120, 120, 0.15);
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+  color: var(--accent-text, #818cf8);
+}
+
+.prose pre, .markdown-body pre {
+  background-color: rgba(15, 23, 42, 0.85);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-bottom: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.prose pre code, .markdown-body pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.prose blockquote, .markdown-body blockquote {
+  border-left: 3px solid var(--accent-primary, #6366f1);
+  padding-left: 0.75rem;
+  font-style: italic;
+  opacity: 0.9;
+  margin-bottom: 0.75rem;
+}
+
+.prose table, .markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.875rem;
+}
+
+.prose th, .markdown-body th,
+.prose td, .markdown-body td {
+  border: 1px solid rgba(120, 120, 120, 0.2);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+
+.prose th, .markdown-body th {
+  background-color: rgba(120, 120, 120, 0.1);
+  font-weight: 700;
+}
+
+.prose a, .markdown-body a {
+  color: var(--accent-text, #818cf8);
+  text-decoration: underline;
+}
+
+/* Dynamic theme dropdown popover overrides & universal theme rules for light/white & light-grey modes */
+
+html[data-theme="white"] body,
+html[data-theme="white"] #root {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="white"] header {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="white"] aside,
+html[data-theme="white"] section,
+html[data-theme="white"] main,
+html[data-theme="white"] .bg-slate-950,
+html[data-theme="white"] .bg-slate-900,
+html[data-theme="white"] .bg-zinc-950,
+html[data-theme="white"] .bg-zinc-900,
+html[data-theme="white"] .bg-gray-950,
+html[data-theme="white"] .bg-gray-900,
+html[data-theme="white"] .bg-slate-950\/80,
+html[data-theme="white"] .bg-slate-950\/90,
+html[data-theme="white"] .bg-slate-900\/90,
+html[data-theme="white"] .bg-slate-900\/80,
+html[data-theme="white"] .bg-slate-900\/60,
+html[data-theme="white"] .bg-slate-900\/50,
+html[data-theme="white"] .bg-slate-900\/40,
+html[data-theme="white"] .bg-slate-900\/30,
+html[data-theme="white"] .bg-slate-900\/20,
+html[data-theme="white"] .bg-slate-800\/90,
+html[data-theme="white"] .bg-slate-800\/80,
+html[data-theme="white"] .bg-slate-800\/60,
+html[data-theme="white"] .bg-slate-800\/50,
+html[data-theme="white"] .bg-slate-800\/30,
+html[data-theme="white"] .bg-slate-800\/20 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+
+html[data-theme="white"] .bg-slate-800,
+html[data-theme="white"] .bg-slate-850,
+html[data-theme="white"] .bg-zinc-800,
+html[data-theme="white"] .bg-zinc-850 {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="white"] .border-slate-900,
+html[data-theme="white"] .border-slate-850,
+html[data-theme="white"] .border-slate-800,
+html[data-theme="white"] .border-slate-700,
+html[data-theme="white"] .border-slate-600,
+html[data-theme="white"] .border-zinc-800,
+html[data-theme="white"] .border-zinc-700 {
+  border-color: #e2e8f0 !important;
+}
+
+html[data-theme="white"] input,
+html[data-theme="white"] select,
+html[data-theme="white"] textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html[data-theme="white"] .text-slate-100,
+html[data-theme="white"] .text-slate-200,
+html[data-theme="white"] .text-slate-300,
+html[data-theme="white"] .text-white,
+html[data-theme="white"] .text-zinc-100,
+html[data-theme="white"] .text-zinc-200,
+html[data-theme="white"] .text-zinc-300 {
+  color: #0f172a !important;
+}
+
+html[data-theme="white"] .text-slate-400,
+html[data-theme="white"] .text-slate-500,
+html[data-theme="white"] .text-zinc-400,
+html[data-theme="white"] .text-zinc-500 {
+  color: #334155 !important;
+}
+
+html[data-theme="white"] .text-slate-600,
+html[data-theme="white"] .text-zinc-600 {
+  color: #64748b !important;
+}
+
+html[data-theme="white"] .hover\:bg-slate-800:hover,
+html[data-theme="white"] .hover\:bg-slate-700:hover,
+html[data-theme="white"] .hover\:bg-slate-800\/80:hover,
+html[data-theme="white"] .hover\:bg-slate-900\/80:hover,
+html[data-theme="white"] .hover\:bg-slate-900:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* =========================================================
+   LIGHT-GREY THEME OVERRIDES
+   ========================================================= */
+html[data-theme="light-grey"] body,
+html[data-theme="light-grey"] #root {
+  background-color: #e4e4e7 !important;
+  color: #18181b !important;
+}
+
+html[data-theme="light-grey"] header {
+  background-color: #f4f4f5 !important;
+  border-color: #d4d4d8 !important;
+  color: #18181b !important;
+}
+
+html[data-theme="light-grey"] aside,
+html[data-theme="light-grey"] section,
+html[data-theme="light-grey"] main,
+html[data-theme="light-grey"] .bg-slate-950,
+html[data-theme="light-grey"] .bg-slate-900,
+html[data-theme="light-grey"] .bg-zinc-950,
+html[data-theme="light-grey"] .bg-zinc-900,
+html[data-theme="light-grey"] .bg-gray-950,
+html[data-theme="light-grey"] .bg-gray-900,
+html[data-theme="light-grey"] .bg-slate-950\/80,
+html[data-theme="light-grey"] .bg-slate-950\/90,
+html[data-theme="light-grey"] .bg-slate-900\/90,
+html[data-theme="light-grey"] .bg-slate-900\/80,
+html[data-theme="light-grey"] .bg-slate-900\/60,
+html[data-theme="light-grey"] .bg-slate-900\/50,
+html[data-theme="light-grey"] .bg-slate-900\/40,
+html[data-theme="light-grey"] .bg-slate-900\/30,
+html[data-theme="light-grey"] .bg-slate-900\/20,
+html[data-theme="light-grey"] .bg-slate-800\/90,
+html[data-theme="light-grey"] .bg-slate-800\/80,
+html[data-theme="light-grey"] .bg-slate-800\/60,
+html[data-theme="light-grey"] .bg-slate-800\/50,
+html[data-theme="light-grey"] .bg-slate-800\/30,
+html[data-theme="light-grey"] .bg-slate-800\/20 {
+  background-color: #f4f4f5 !important;
+  color: #18181b !important;
+  border-color: #d4d4d8 !important;
+}
+
+html[data-theme="light-grey"] .bg-slate-800,
+html[data-theme="light-grey"] .bg-slate-850,
+html[data-theme="light-grey"] .bg-zinc-800,
+html[data-theme="light-grey"] .bg-zinc-850 {
+  background-color: #e4e4e7 !important;
+  color: #18181b !important;
+}
+
+html[data-theme="light-grey"] .border-slate-900,
+html[data-theme="light-grey"] .border-slate-850,
+html[data-theme="light-grey"] .border-slate-800,
+html[data-theme="light-grey"] .border-slate-700,
+html[data-theme="light-grey"] .border-slate-600,
+html[data-theme="light-grey"] .border-zinc-800,
+html[data-theme="light-grey"] .border-zinc-700 {
+  border-color: #d4d4d8 !important;
+}
+
+html[data-theme="light-grey"] input,
+html[data-theme="light-grey"] select,
+html[data-theme="light-grey"] textarea {
+  background-color: #ffffff !important;
+  color: #18181b !important;
+  border-color: #d4d4d8 !important;
+}
+
+html[data-theme="light-grey"] .text-slate-100,
+html[data-theme="light-grey"] .text-slate-200,
+html[data-theme="light-grey"] .text-slate-300,
+html[data-theme="light-grey"] .text-white,
+html[data-theme="light-grey"] .text-zinc-100,
+html[data-theme="light-grey"] .text-zinc-200,
+html[data-theme="light-grey"] .text-zinc-300 {
+  color: #18181b !important;
+}
+
+html[data-theme="light-grey"] .text-slate-400,
+html[data-theme="light-grey"] .text-slate-500,
+html[data-theme="light-grey"] .text-zinc-400,
+html[data-theme="light-grey"] .text-zinc-500 {
+  color: #3f3f46 !important;
+}
+
+html[data-theme="light-grey"] .text-slate-600,
+html[data-theme="light-grey"] .text-zinc-600 {
+  color: #71717a !important;
+}
+
+html[data-theme="light-grey"] .hover\:bg-slate-800:hover,
+html[data-theme="light-grey"] .hover\:bg-slate-700:hover,
+html[data-theme="light-grey"] .hover\:bg-slate-800\/80:hover,
+html[data-theme="light-grey"] .hover\:bg-slate-900\/80:hover,
+html[data-theme="light-grey"] .hover\:bg-slate-900:hover {
+  background-color: #d4d4d8 !important;
+  color: #18181b !important;
+}
+
+/* Override prose-invert text colors in white and light-grey themes for Live Markdown Preview */
+html[data-theme="white"] .prose-invert,
+html[data-theme="light-grey"] .prose-invert {
+  color: inherit !important;
+}
+
+html[data-theme="white"] .prose-invert p,
+html[data-theme="white"] .prose-invert h1,
+html[data-theme="white"] .prose-invert h2,
+html[data-theme="white"] .prose-invert h3,
+html[data-theme="white"] .prose-invert h4,
+html[data-theme="white"] .prose-invert li,
+html[data-theme="white"] .prose-invert span,
+html[data-theme="white"] .prose-invert strong,
+html[data-theme="white"] .prose-invert code,
+html[data-theme="white"] .prose-invert td,
+html[data-theme="white"] .prose-invert th {
+  color: #0f172a !important;
+}
+
+html[data-theme="light-grey"] .prose-invert p,
+html[data-theme="light-grey"] .prose-invert h1,
+html[data-theme="light-grey"] .prose-invert h2,
+html[data-theme="light-grey"] .prose-invert h3,
+html[data-theme="light-grey"] .prose-invert h4,
+html[data-theme="light-grey"] .prose-invert li,
+html[data-theme="light-grey"] .prose-invert span,
+html[data-theme="light-grey"] .prose-invert strong,
+html[data-theme="light-grey"] .prose-invert code,
+html[data-theme="light-grey"] .prose-invert td,
+html[data-theme="light-grey"] .prose-invert th {
+  color: #18181b !important;
+}
+

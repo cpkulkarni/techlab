@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Knowledge Graph Explorer</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Default theme: Dark ── */
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2e3245;
+      --text: #e8eaf0;
+      --muted: #7b82a0;
+      --accent: #5b8dee;
+      --accent2: #a78bfa;
+      --success: #34d399;
+      --warn: #f59e0b;
+      --danger: #f87171;
+      --node-0: #5b8dee;
+      --node-1: #a78bfa;
+      --node-2: #34d399;
+      --node-3: #f59e0b;
+      --node-4: #f87171;
+      --node-explored: #2e3245;
+      --toolbar-h: 58px;
+    }
+
+    /* ── Light theme ── */
+    [data-theme="light"] {
+      --bg: #f5f6fa;
+      --surface: #ffffff;
+      --border: #d1d5db;
+      --text: #1f2328;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent2: #7c3aed;
+      --success: #059669;
+      --warn: #d97706;
+      --danger: #dc2626;
+      --node-0: #2563eb;
+      --node-1: #7c3aed;
+      --node-2: #059669;
+      --node-3: #d97706;
+      --node-4: #dc2626;
+      --node-explored: #e5e7eb;
+    }
+
+    /* ── Light Green theme ── */
+    [data-theme="light-green"] {
+      --bg: #f0faf4;
+      --surface: #ffffff;
+      --border: #a7f3d0;
+      --text: #064e3b;
+      --muted: #6b7280;
+      --accent: #059669;
+      --accent2: #0d9488;
+      --success: #10b981;
+      --warn: #d97706;
+      --danger: #dc2626;
+      --node-0: #059669;
+      --node-1: #0d9488;
+      --node-2: #2563eb;
+      --node-3: #d97706;
+      --node-4: #dc2626;
+      --node-explored: #d1fae5;
+    }
+
+    /* ── Light Blue theme ── */
+    [data-theme="light-blue"] {
+      --bg: #eff6ff;
+      --surface: #ffffff;
+      --border: #bfdbfe;
+      --text: #1e3a5f;
+      --muted: #6b7280;
+      --accent: #1d4ed8;
+      --accent2: #0891b2;
+      --success: #059669;
+      --warn: #d97706;
+      --danger: #dc2626;
+      --node-0: #1d4ed8;
+      --node-1: #0891b2;
+      --node-2: #059669;
+      --node-3: #d97706;
+      --node-4: #dc2626;
+      --node-explored: #dbeafe;
+    }
+
+    /* ── Solarized Dark theme ── */
+    [data-theme="solarized"] {
+      --bg: #002b36;
+      --surface: #073642;
+      --border: #094c5a;
+      --text: #839496;
+      --muted: #586e75;
+      --accent: #268bd2;
+      --accent2: #d33682;
+      --success: #859900;
+      --warn: #cb4b16;
+      --danger: #dc322f;
+      --node-0: #268bd2;
+      --node-1: #2aa198;
+      --node-2: #859900;
+      --node-3: #cb4b16;
+      --node-4: #d33682;
+      --node-explored: #094c5a;
+    }
+
+    /* ── Midnight Purple theme ── */
+    [data-theme="purple"] {
+      --bg: #0d0d1a;
+      --surface: #16162a;
+      --border: #2d2b55;
+      --text: #e2e0ff;
+      --muted: #8b85b8;
+      --accent: #a78bfa;
+      --accent2: #f472b6;
+      --success: #34d399;
+      --warn: #f59e0b;
+      --danger: #f87171;
+      --node-0: #a78bfa;
+      --node-1: #f472b6;
+      --node-2: #34d399;
+      --node-3: #f59e0b;
+      --node-4: #60a5fa;
+      --node-explored: #2d2b55;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      font-size: 14px;
+      overflow: hidden;
+    }
+
+    /* ── Toolbar ── */
+    #toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      height: var(--toolbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    #app-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      margin-right: 6px;
+    }
+
+    #topic-input {
+      flex: 1;
+      min-width: 160px;
+      max-width: 380px;
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #topic-input:focus { border-color: var(--accent); }
+    #topic-input::placeholder { color: var(--muted); }
+
+    .tb-btn {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .tb-btn:hover { background: var(--border); border-color: var(--accent); }
+    .tb-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+    .tb-btn.primary:hover { opacity: 0.88; }
+    .tb-btn.icon-btn { padding: 0 10px; font-size: 16px; }
+
+    .tb-sep { width: 1px; height: 22px; background: var(--border); flex-shrink: 0; }
+
+    /* ── Canvas ── */
+    #graph-container {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - var(--toolbar-h));
+      overflow: hidden;
+    }
+
+    #graph-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ── D3 Graph Elements ── */
+    .link {
+      stroke: var(--border);
+      stroke-width: 1.5px;
+      fill: none;
+    }
+    .link-label {
+      font-size: 10px;
+      fill: var(--muted);
+      pointer-events: none;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    .node-group { cursor: pointer; }
+    .node-circle {
+      stroke-width: 2px;
+      transition: filter 0.2s;
+    }
+    .node-circle:hover { filter: brightness(1.25); }
+    .node-label {
+      font-size: 11px;
+      fill: var(--text);
+      text-anchor: middle;
+      dominant-baseline: hanging;
+      pointer-events: none;
+      user-select: none;
+    }
+    .node-info-badge {
+      cursor: pointer;
+    }
+    .node-info-badge .node-info-bg {
+      transition: fill 0.15s;
+    }
+    .node-info-badge:hover .node-info-bg {
+      fill: var(--accent);
+      stroke: var(--accent);
+    }
+    .node-info-icon {
+      font-size: 9px;
+      font-weight: 700;
+      font-style: italic;
+      fill: var(--accent);
+      pointer-events: none;
+      user-select: none;
+    }
+    .node-info-badge:hover .node-info-icon {
+      fill: #fff;
+    }
+
+    /* ── Summary Popup ── */
+    #summary-popup {
+      position: fixed;
+      z-index: 999;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      max-width: 290px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+      display: none;
+      animation: popIn 0.15s ease;
+    }
+    #summary-popup.visible { display: block; }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    #summary-popup h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    #summary-popup p {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.65;
+      margin-bottom: 10px;
+    }
+    #summary-popup .more-link {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+      display: block;
+    }
+    #summary-popup .more-link:hover { text-decoration: underline; }
+
+    /* ── Settings Modal ── */
+    #settings-backdrop {
+      position: fixed; inset: 0; z-index: 800;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #settings-backdrop.visible { display: flex; }
+    #settings-modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.7);
+    }
+    #settings-modal h2 { font-size: 15px; margin-bottom: 18px; color: var(--text); }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+    .form-group input, .form-group select {
+      width: 100%;
+      height: 34px;
+      padding: 0 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+    .form-group select option { background: var(--bg); }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+    /* ── Loading Overlay ── */
+    #loading-overlay {
+      position: fixed; inset: 0; z-index: 700;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+    }
+    #loading-overlay.visible { display: flex; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading-text { font-size: 13px; color: var(--muted); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 13px;
+      color: var(--text);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      display: none;
+      white-space: nowrap;
+    }
+    #toast.visible { display: block; animation: fadeIn 0.2s ease; }
+    #toast.error   { border-color: var(--danger); color: var(--danger); }
+    #toast.success { border-color: var(--success); color: var(--success); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ── Welcome Banner ── */
+    #welcome-banner {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      z-index: 600;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      max-width: 280px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    #welcome-banner strong { color: var(--text); display: block; margin-bottom: 4px; font-size: 13px; }
+    #dismiss-welcome {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    /* ── Graph Legend ── */
+    #legend {
+      position: absolute;
+      top: 12px; left: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 11px;
+      color: var(--muted);
+      pointer-events: none;
+      line-height: 1.9;
+    }
+    .legend-dot {
+      display: inline-block;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    #file-input { display: none; }
+
+    /* ── Theme Picker ── */
+    #theme-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 0;
+      min-width: 180px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      z-index: 500;
+    }
+    #theme-menu.open { display: block; }
+    .theme-opt {
+      padding: 8px 14px;
+      font-size: 12px;
+      color: var(--text);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.12s;
+    }
+    .theme-opt:hover { background: var(--border); }
+    .theme-opt.active { color: var(--accent); font-weight: 600; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      #app-title { display: none; }
+      #topic-input { min-width: 100px; }
+      .tb-sep { display: none; }
+      #legend { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div id="toolbar">
+  <span id="app-title">🕸 Knowledge Graph</span>
+  <input id="topic-input" type="text" placeholder="Enter a topic…" autocomplete="off" />
+  <button class="tb-btn primary" id="generate-btn">Generate</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn icon-btn" id="save-btn" title="Save graph">💾</button>
+  <button class="tb-btn icon-btn" id="load-btn" title="Load graph">📂</button>
+  <input id="file-input" type="file" accept=".json" />
+  <div class="tb-sep"></div>
+  <button class="tb-btn icon-btn" id="fit-btn" title="Fit to view">⊡</button>
+  <div class="tb-sep"></div>
+  <div id="theme-picker-wrap" style="position:relative">
+    <button class="tb-btn icon-btn" id="theme-btn" title="Switch theme">🎨</button>
+    <div id="theme-menu">
+      <div class="theme-opt" data-theme="">⬛ Dark (default)</div>
+      <div class="theme-opt" data-theme="light">🔲 Light</div>
+      <div class="theme-opt" data-theme="light-green">🟩 Light Green</div>
+      <div class="theme-opt" data-theme="light-blue">🟦 Light Blue</div>
+      <div class="theme-opt" data-theme="solarized">🌅 Solarized Dark</div>
+      <div class="theme-opt" data-theme="purple">🟣 Midnight Purple</div>
+    </div>
+  </div>
+  <button class="tb-btn icon-btn" id="settings-btn" title="Settings">⚙️</button>
+</div>
+
+<!-- Graph Canvas -->
+<div id="graph-container">
+  <svg id="graph-svg"></svg>
+
+  <!-- Legend -->
+  <div id="legend">
+    <div><span class="legend-dot" style="background:var(--node-0)"></span>Root</div>
+    <div><span class="legend-dot" style="background:var(--node-1)"></span>Depth 1</div>
+    <div><span class="legend-dot" style="background:var(--node-2)"></span>Depth 2</div>
+    <div><span class="legend-dot" style="background:var(--node-3)"></span>Depth 3+</div>
+    <div><span class="legend-dot" style="background:var(--node-explored);border:1.5px solid var(--muted)"></span>Explored</div>
+  </div>
+
+  <!-- Welcome Banner -->
+  <div id="welcome-banner">
+    <strong>👋 Getting Started</strong>
+    1. ⚙️ Choose your LLM provider in Settings<br>
+    2. Type a topic and click <strong>Generate</strong><br>
+    3. Click any node to expand it<br>
+    4. Click ℹ on a node for a summary
+    <div id="dismiss-welcome">Got it, dismiss</div>
+  </div>
+</div>
+
+<!-- Summary Popup -->
+<div id="summary-popup">
+  <h3 id="popup-title"></h3>
+  <p id="popup-summary"></p>
+  <a id="popup-link" class="more-link" href="#" target="_blank" rel="noopener">🔗 More Details →</a>
+</div>
+
+<!-- Settings Modal -->
+<div id="settings-backdrop">
+  <div id="settings-modal">
+    <h2>⚙️ LLM Provider Settings</h2>
+    <div class="form-group">
+      <label>Provider</label>
+      <select id="set-provider">
+        <option value="ollama">Ollama (Local)</option>
+        <option value="openai">OpenAI (ChatGPT)</option>
+        <option value="gemini">Google Gemini</option>
+      </select>
+    </div>
+    <div class="form-group" id="set-group-ollama-url">
+      <label>Ollama Base URL</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="set-ollama-url" type="text" placeholder="http://localhost:11434" style="flex:1" />
+        <button class="tb-btn" id="ollama-connect-btn" type="button" style="white-space:nowrap;flex-shrink:0">Connect</button>
+      </div>
+      <div id="ollama-connect-status" style="font-size:11px;margin-top:5px;color:var(--muted)"></div>
+    </div>
+    <div class="form-group" id="set-group-ollama-model" style="display:none">
+      <label>Ollama Model</label>
+      <select id="set-ollama-model"></select>
+    </div>
+    <div class="form-group" id="set-group-model">
+      <label>Model Name (OpenAI)</label>
+      <input id="set-model" type="text" placeholder="gpt-4o-mini" />
+    </div>
+    <div class="form-group" id="set-group-gemini-model" style="display:none">
+      <label>Gemini Model</label>
+      <select id="set-gemini-model">
+        <option value="gemini-3.6-flash" selected>gemini-3.6-flash</option>
+        <option value="gemini-3.5-flash">gemini-3.5-flash</option>
+        <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
+        <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview</option>
+        <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+        <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+      </select>
+    </div>
+    <div class="form-group" id="set-group-apikey" style="display:none">
+      <label>API Key</label>
+      <input id="set-apikey" type="password" placeholder="sk-… or AIza…" />
+    </div>
+    <div class="form-group">
+      <label>Search Engine for "More Details" links</label>
+      <select id="set-search-engine">
+        <option value="duckduckgo">DuckDuckGo</option>
+        <option value="google">Google</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="tb-btn" id="settings-cancel-btn">Cancel</button>
+      <button class="tb-btn primary" id="settings-save-btn">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div id="loading-text">Querying LLM…</div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Shared app state (must be first, before other scripts) -->
+<script>
+const state = {
+  nodes: [],   // { id, label, summary, explored, depth, properties }
+  edges: [],   // { id, source, target, relation }
+  settings: {
+    provider: 'ollama',
+    ollamaUrl: 'http://localhost:11434',
+    model: 'llama3',
+    apiKey: '',
+    searchEngine: 'duckduckgo'
+  }
+};
+
+// ── Theme ─────────────────────────────────────────
+const THEMES = ['', 'light', 'light-green', 'light-blue', 'solarized', 'purple'];
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('kg_theme', theme);
+  // Highlight active item
+  document.querySelectorAll('.theme-opt').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === theme);
+  });
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('kg_theme') || '';
+  applyTheme(saved);
+}
+
+// Theme menu toggle
+document.getElementById('theme-btn').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('theme-menu').classList.toggle('open');
+});
+
+document.querySelectorAll('.theme-opt').forEach(el => {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    applyTheme(el.dataset.theme);
+    document.getElementById('theme-menu').classList.remove('open');
+  });
+});
+
+document.addEventListener('click', () => {
+  document.getElementById('theme-menu').classList.remove('open');
+});
+
+initTheme();
+</script>
+
+<script src="kg-llm.js"></script>
+<script src="kg-settings.js"></script>
+<script src="kg-graph.js"></script>
+
+</body>
+</html>
